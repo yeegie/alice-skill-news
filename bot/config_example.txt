@@ -1,0 +1,17 @@
+[Telegram]
+token=*****:******
+
+[API]
+base_url=http://localhost:8000/
+
+[WebHook]
+listen_address = localhost
+listen_port = 5000
+base_url = https://63e6-94-241-173-114.ngrok-free.app
+bot_path = /bot
+
+[SMTP]
+host=smtp.gmail.com
+port=587
+user=********
+password=**** ***** *****
