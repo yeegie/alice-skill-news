@@ -38,7 +38,47 @@ python .\alice\app.py
 2. Начните процесс связывания аккаунта, вам будет сообщена секретная фраза.
 3. Начните диалог с Алисой и снова начните процесс связывания, сообщите секретную фразу.
 4. В телеграм боте добавьте интересующие вас каналы.
-5. Чтобы узнать о новых постах в каналах, спросите Алису -- "что нового?"
+5. Чтобы узнать о новых постах в каналах, спросите Алису -- что нового?
+
+# Файлы конфигурации
+Ниже будут небольшие комментарии и выделенные поля, которые нужно заполнить.
+### backend/config.ini
+[Backend]  На каком хосте и порте будет развёрнуто приложение
+1. host = localhost
+2. port = 8000
+
+[MySQL] Данные от базы данных MySQL
+1. host = localhost
+2. port = 3306
+3. user = user
+4. <u>password = password
+5. database = alice_news
+
+[TelegramAPI] Регистрируем приложение [тут](https://my.telegram.org/auth?to=apps), вводим данные ниже
+1. api_id=12345678
+2. api_hash=27super218892secret3949token231
+
+<hr>
+
+### bot/config.ini
+[Telegram] Токен бота из [Bot Father](https://t.me/BotFather)
+1. token=123123:SIDsdiosadiS12
+
+[API]
+1. base_url=http://localhost:8000/
+
+[WebHook] 
+1. listen_address = localhost
+2. listen_port = 5000
+3. base_url = https://63e6-94-241-173-114.ngrok-free.app
+4. bot_path = /bot
+
+[SMTP] Данные от аккаунта гугл, для отправки писем с кодом подтвержения
+1. host=smtp.gmail.com
+2. port=587
+3. user=mail.noreply@gmail.com
+4. password=111 2341 2312
+
 
 # Полезная информация
 * Для отладки Алисы локально советую использовать [alice-nearby](https://github.com/azzzak/alice-nearby).
