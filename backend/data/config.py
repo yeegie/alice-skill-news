@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 
 parser = ConfigParser()
-parser.read('config.ini')
+parser.read(r'config.ini')
 
 
 class Backend:
@@ -21,7 +21,7 @@ class MySQL:
     connection_string = f'mysql://{user}:{password}@{host}:{port}/{database}'
 
 
-class Pyrogram:
-    section = 'Pyrogram'
+class TelegramAPI:
+    section = 'TelegramAPI'
     api_id = parser.get(section, 'api_id')
     api_hash = parser.get(section, 'api_hash')

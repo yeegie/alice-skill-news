@@ -1,12 +1,12 @@
-from data.config import Pyrogram
+from data.config import TelegramAPI
 from pyrogram import Client
 from typing import List, Optional
 from loguru import logger
 
 
 class NewsParser:
-    __api_id = Pyrogram.api_id
-    __api_hash = Pyrogram.api_hash
+    __api_id = TelegramAPI.api_id
+    __api_hash = TelegramAPI.api_hash
 
     async def parse_channel(app: Client, channel_id: str) -> dict:
         result = {
