@@ -1,5 +1,7 @@
 # Навык "Новости" для станций Яндекс
 
+![Network Diagram](https://github.com/yeegie/alice-skill-news/docs/NetworkDiagram.png)
+
 # Установка
 
 0. Создайте виртуальное окружение и активируйте его

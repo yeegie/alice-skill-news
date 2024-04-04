@@ -135,11 +135,9 @@ dmypy.json
 logs/
 
 alice-nearby/
-docs/
 .old/
 
 */*.ini
 */*.session
-*/*.png
 
 bot/resources/captcha/image/*.*
