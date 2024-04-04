@@ -1,6 +1,6 @@
 # Навык "Новости" для станций Яндекс
 
-![Network Diagram](https://github.com/yeegie/alice-skill-news/docs/NetworkDiagram.png)
+![Network Diagram](https://github.com/yeegie/alice-skill-news/blob/main/docs/NetworkDiagram.png)
 
 # Установка
 
