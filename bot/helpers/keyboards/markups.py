@@ -1,6 +1,8 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, KeyboardButton, InlineKeyboardBuilder, InlineKeyboardButton
 
-from ..fabrics.fabric import MenuCallback, PopupCallback, ChannelsCallback, DeviceCallback
+from ..fabrics.fabric import MenuCallback, PopupCallback, ChannelsCallback, SessionCallback
+
+from typing import Optional
 
 btn_main_menu = KeyboardButton(text='Главное меню 🏠')
 btn_back_button = KeyboardButton(text='Назад')
@@ -16,6 +18,9 @@ def welcome():
 
 
 def confirm():
+    '''
+    Reply markup with YES and NO buttons.
+    '''
     builder = ReplyKeyboardBuilder()
     builder.row(KeyboardButton(text='Да'))
     builder.row(KeyboardButton(text='Нет'))
@@ -74,10 +79,9 @@ def menu():
     btn_subscriptions = KeyboardButton(text='Каналы 🗂')
     btn_profile = KeyboardButton(text='Профиль 👤')
     btn_help = KeyboardButton(text='Помощь 🔍')
-    btn_devices = KeyboardButton(text='Устройства 💻')
 
     builder.row(btn_subscriptions, btn_profile)
-    builder.row(btn_devices)
+    builder.row(KeyboardButton(text='Связать 🔗'))
     builder.row(btn_help)
 
     return builder.as_markup(resize_keyboard=True)
@@ -140,35 +144,38 @@ def channel_view(channel_id: int, visibility: bool):
 
 # DEVICES
 
-def devices_list(devices: list):
-    builder = InlineKeyboardBuilder()
-    builder.row(InlineKeyboardButton(text='Связать 🔗', callback_data=DeviceCallback(action='new').pack()))
+# def devices_list(devices: list):
+#     builder = InlineKeyboardBuilder()
+#     builder.row(InlineKeyboardButton(text='Связать 🔗', callback_data=DeviceCallback(action='new').pack()))
 
-    for device in devices:
-        builder.row(InlineKeyboardButton(text=device['title'], callback_data=DeviceCallback(action='open', device_id=device['id']).pack()))
+#     for device in devices:
+#         builder.row(InlineKeyboardButton(text=device['title'], callback_data=DeviceCallback(action='open', device_id=device['id']).pack()))
 
-    builder.row(btn_main_menu_inline)
+#     builder.row(btn_main_menu_inline)
 
-    return builder.as_markup(resize_keyboard=True)
+#     return builder.as_markup(resize_keyboard=True)
 
-def device_menu():
-    builder = InlineKeyboardBuilder()
-    builder.row(InlineKeyboardButton(text='Связать 🔗', callback_data=DeviceCallback(action='new').pack()))
-    builder.row(btn_main_menu_inline)
-    return builder.as_markup(resize_keyboard=True)
+# def device_menu():
+#     builder = InlineKeyboardBuilder()
+#     builder.row(InlineKeyboardButton(text='Связать 🔗', callback_data=DeviceCallback(action='new').pack()))
+#     builder.row(btn_main_menu_inline)
+#     return builder.as_markup(resize_keyboard=True)
 
-def back_to_devices_list():
-    pass
+# def back_to_devices_list():
+#     pass
 
-def devices_end():
-    pass
+# def devices_end():
+#     pass
 
-def device_view():
-    pass
+# def device_view():
+#     pass
 
 # SESSIONS
 
 def cancel_all_sessions():
+    '''
+    Reply markup with one button - CLOSE ALL SESSIONS
+    '''
     builder = InlineKeyboardBuilder()
-    builder.row(InlineKeyboardButton(text='Закрыть все сессии ❌', callback_data=DeviceCallback(action='close_all_sessions').pack()))
+    builder.row(InlineKeyboardButton(text='Закрыть все сессии ❌', callback_data=SessionCallback(action='close_all_sessions').pack()))
     return builder.as_markup(resize_keyboard=True)

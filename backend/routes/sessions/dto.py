@@ -18,6 +18,7 @@ class SessionAnswerDto(BaseModel):
 
 class SessionCreateDto(BaseModel):
     user_id: int
+    secret: str
 
 
 class SessionUpdateDto(BaseModel):

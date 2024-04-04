@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from tortoise.exceptions import IntegrityError
 from .dto import ChannelCreateDto, ChannelSchema
 from database.models import Channel, User
@@ -33,3 +33,43 @@ async def all():
         return await Channel.all()
     except Exception as ex:
         return HTTPException(status_code=500, detail=str(ex))
+    
+
+@router.get('/by/id/{id}', response_model=ChannelSchema)
+async def find_one_by_id(id: str):
+    try:
+        channel = await Channel.get_or_none(id=id)
+        if channel is None: raise HTTPException(status_code=404, detail='Channel not found.')
+        return channel
+    except HTTPException as http_ex:
+        return Response(content=http_ex.detail, status_code=http_ex.status_code)
+    except Exception as ex:
+        raise HTTPException(status_code=500, detail=str(ex))
+
+
+@router.post('/toggle/{id}', response_model=ChannelSchema)
+async def toggle_visibility(id: str):
+    try:
+        channel = await Channel.get_or_none(id=id)
+        if channel is None: raise HTTPException(status_code=404, detail='Channel not found.')
+        channel.active = not channel.active
+        await channel.save()
+        return channel
+    except HTTPException as http_ex:
+        return Response(content=http_ex.detail, status_code=http_ex.status_code)
+    except Exception as ex:
+        raise HTTPException(status_code=500, detail=str(ex))
+    
+
+@router.delete('/{id}', status_code=204)
+async def delete(id: str):
+    try:
+        channel = await Channel.get_or_none(id=id)
+        if channel is None:
+            raise HTTPException(status_code=404, detail='Сhannel not found.')
+        await channel.delete()
+    except HTTPException as http_ex:
+        return Response(content=http_ex.detail, status_code=http_ex.status_code)
+    except Exception as ex:
+        raise HTTPException(
+            status_code=500, detail=str(ex))

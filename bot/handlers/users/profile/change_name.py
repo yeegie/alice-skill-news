@@ -3,10 +3,11 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
+from services.user_service import UserService
+
 from helpers.fabrics import MenuCallback
 from helpers.keyboards import markups
 from helpers.functions import render_profile
-
 from handlers.routers import user_router
 
 
@@ -32,10 +33,12 @@ async def get_name(message: Message, bot: Bot, state: FSMContext):
 async def get_confirm(message: Message, state: FSMContext, bot: Bot):
     new_name = (await state.get_data())['new_name']
     if message.text.lower() == 'да':
+        is_exist, user = await UserService.check(user_id=message.from_user.id)
         # user = await UserService.getByUserId(message.from_user.id)
         # await UserService.update(user['id'], {'name': 'new_name'})
         # await render_profile(message, markups.menu(), user)
         await message.answer('👌')
+        await render_profile(message, markups.profile_menu(), user)
         await state.clear()
     elif message.text.lower() == 'нет':
         await message.answer('Введи ещё раз')

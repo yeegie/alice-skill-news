@@ -140,3 +140,6 @@ docs/
 
 */*.ini
 */*.session
+*/*.png
+
+bot/resources/captcha/image/*.*

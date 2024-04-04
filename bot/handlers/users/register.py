@@ -3,13 +3,14 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, FSInputFile
 
-from helpers.keyboards import markups
+from loguru import logger
 
-from typing import Union
+from helpers.keyboards import markups
 
 from ..routers import user_router
 
 from helpers import states
+
 from helpers.smtp import SMTPService
 from data.config import SMTP
 
@@ -19,7 +20,6 @@ from services.user_service import UserService
 
 from captcha.image import ImageCaptcha
 
-import random
 
 @user_router.message(F.text == 'Регистрация 👤')
 @user_router.message(F.text.lower().startswith('регистрация'))
@@ -73,22 +73,17 @@ async def get_email(message: Message, state: FSMContext):
 async def get_confirm(message: Message, state: FSMContext):
     if message.text.lower() == 'да':
         await message.answer('Так, отправляю...')
-        smtp = SMTPService(  # !!!!!!!
-            host=SMTP.host,
-            port=SMTP.port,
-            user=SMTP.user,
-            password=SMTP.password,
-        )
-        await smtp.connect()
-        await smtp.login()
+
+        smtp_service = SMTPService()
+
         data = await state.get_data()
-        secret = await smtp.send_confirm_code(data['email'])
+        secret = await smtp_service.send_confirm_code(data['email'])
+        logger.debug(f'[{message.from_user.id}] @{message.from_user.username} -- {secret}')
 
         await message.answer(f'Отправил, жду твой код')
         await state.update_data(secret=secret)
 
         await state.set_state(states.Register.code)
-        await smtp.kill()
     elif message.text.lower() == 'нет':
         await message.answer('Введи свою почту на неё придёт код подтверждения, например\n└ <code>bob@gmail.com</code>')
         await state.set_state(states.Register.email)
@@ -106,7 +101,7 @@ async def get_code(message: Message, state: FSMContext):
             user_id=message.from_user.id,
             email=data['email'],
             username=message.from_user.username,
-            first_name=message.from_user.first_name,
+            full_name=message.from_user.full_name,
         )
         await state.clear()
     else:

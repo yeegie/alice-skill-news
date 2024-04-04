@@ -1,5 +1,5 @@
 from aiogram import Bot, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InputTextMessageContent, InlineQueryResultArticle
 
 from handlers.routers import user_router
 
@@ -13,6 +13,7 @@ from loguru import logger
 #     pprint(callback)
 
 # @user_router.message()
-# async def msg_handler(message: Message):
+# async def msg_handler(message: Message, bot: Bot):
 #     logger.warning('MESSAGE HANDLER')
-#     pprint(message)
+#     await message.answer(message.text)
+
