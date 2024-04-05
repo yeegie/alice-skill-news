@@ -18,4 +18,4 @@ class UserSchema(BaseModel):
     register_time: datetime
     sessions: List[SessionSchema]
     channels: List[ChannelSchema]
-    # news: List[NewsSchema]
+    news: List[NewsSchema]

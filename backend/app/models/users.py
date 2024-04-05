@@ -40,5 +40,5 @@ class User(Model):
             register_time=self.register_time,
             sessions=self.sessions,
             channels=self.channels,
-            # news=self.news,
+            news=self.news,
         )

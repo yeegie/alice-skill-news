@@ -10,6 +10,11 @@ from faker import Faker
 from faker.providers import internet
 
 
+@click.group()
+def cli():
+    pass
+
+
 @click.command()
 @click.option('--count', type=int, default=1, help='Generate n fake users')
 @click.option('--locale', type=str, default='ru_RU', help='locale format -- en_EN')
