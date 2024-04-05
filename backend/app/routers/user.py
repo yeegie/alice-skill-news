@@ -4,7 +4,7 @@ from schemas.user import UserSchema
 from schemas.dto.user import UserCreateDto, UserUpdateDto
 
 from models import User, News
-from tortoise.exceptions import IntegrityError, DoesNotExist
+from tortoise.exceptions import IntegrityError, DoesNotExist, ValidationError
 
 from services.user import UserService
 
@@ -26,17 +26,16 @@ async def create(user_data: UserCreateDto):
 
 
 @router.put('/{id}')
-async def update_user(id: str, user_data: UserUpdateDto):
+async def update(id: str, user_data: UserUpdateDto):
     try:
-        user = await User.get_or_none(id=id).prefetch_related(*prefetch_list)
-        if user is None: raise HTTPException(status_code=404, detail='User not found.')
-        await user.update_from_dict(user_data.model_dump())
-        await user.save()
+        user = await UserService.update(id, user_data)
         return user
-    except HTTPException as http_ex:
-        return Response(content=http_ex.detail, status_code=http_ex.status_code)
+    except ValidationError as ex:
+        logger.error(f'[429] {str(ex)}')
+        return HTTPException(429, detail=str(ex))
     except Exception as ex:
-        raise HTTPException(status_code=500, detail=str(ex))
+        logger.error(f'[500] {str(ex)}')
+        return HTTPException(500, detail=str(ex))
 
 
 @router.get('/')
@@ -53,7 +52,7 @@ async def get_all():
 async def get(id: str):
     '''Get user by pk'''
     try:
-        user = await UserService.get_user(id)
+        user = await UserService.get(id)
         return user
     except DoesNotExist as ex:
         return HTTPException(404, detail=str(ex))

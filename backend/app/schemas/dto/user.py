@@ -1,5 +1,7 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 from typing import Optional
+
+from models.dataclasses import UserType
 
 
 class UserCreateDto(BaseModel):
@@ -10,7 +12,12 @@ class UserCreateDto(BaseModel):
 
 
 class UserUpdateDto(BaseModel):
-    type: str
-    email: EmailStr
-    full_name: str
+    type: Optional[str] = None
+    email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
     username: Optional[str] = None
+
+    @validator('type')
+    def validate_type(cls, v):
+        UserType.validator(v)
+        return v

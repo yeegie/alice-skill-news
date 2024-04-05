@@ -21,8 +21,8 @@ class MySQL:
     connection_string = f'mysql://{user}:{password}@{host}:{port}/{database}'
 
 
-class Memcached:
-    section = 'Memcached'
+class Redis:
+    section = 'Redis'
     host = parser.get(section, 'host')
     port = parser.getint(section, 'port')
 

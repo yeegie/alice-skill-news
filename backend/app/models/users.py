@@ -28,7 +28,7 @@ class User(Model):
     def is_admin(self) -> bool:
         return self.type == UserType.admin
     
-    def to_schema(self) -> UserSchema:
+    async def to_schema(self) -> UserSchema:
         return UserSchema(
             id=self.id,
             type=self.type,
@@ -38,7 +38,7 @@ class User(Model):
             username=self.username,
             email=self.email,
             register_time=self.register_time,
-            sessions=self.sessions,
+            sessions=[session.to_schema() for session in await self.sessions.all()],
             channels=self.channels,
             news=self.news,
         )

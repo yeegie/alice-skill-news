@@ -3,6 +3,8 @@ from tortoise import Model
 
 import uuid
 
+from schemas.session import SessionSchema
+
 
 class Session(Model):
     id = fields.CharField(pk=True, max_length=20, default=lambda: str(uuid.uuid4().hex)[:12])
@@ -22,3 +24,13 @@ class Session(Model):
 
     class Meta:
         table = 'sessions'
+
+    def to_schema(self) -> SessionSchema:
+        return SessionSchema(
+            id=self.id,
+            secret=self.secret,
+            start_time=self.start_time,
+            end_time=self.end_time,
+            user_id=self.user_id,
+            active=self.active,
+        )
