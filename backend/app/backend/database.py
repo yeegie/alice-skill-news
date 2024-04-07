@@ -7,7 +7,7 @@ modules = {'models': ['models']}
 
 async def connect_database(*_, **__):
     await Tortoise.init(db_url=MySQL.connection_string, modules=modules)
-    await Tortoise.generate_schemas()
+    await Tortoise.generate_schemas(safe=True)
     logger.info('[📦] Database connected.')
 
 
