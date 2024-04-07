@@ -7,11 +7,11 @@ from aiogram.client.default import DefaultBotProperties
 
 from aiogram.enums.parse_mode import ParseMode
 
-from aiohttp.web import Application, run_app
+from aiohttp.web import Application, run_app, post
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
 from middlewares.manage_users import ManageUserMiddleware
-from handlers import routers
+from handlers import routers, notification_handler
 
 from helpers.smtp import SMTPService
 from models.smtp.params import SmtpParams
@@ -77,6 +77,7 @@ if __name__ == '__main__':
 
     app['bot'] = bot
     app['dp'] = dispather
+    app.add_routes([post('/notification', notification_handler)])
 
     SimpleRequestHandler(dispatcher=dispather, bot=bot).register(app, WebHook.bot_path)
 

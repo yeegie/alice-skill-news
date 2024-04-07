@@ -9,7 +9,8 @@ from typing import List
 
 from .user import UserService
 
-from tortoise.fields.relational import ReverseRelation
+from .notification import NotificationService
+from schemas.notification import NotificationSchema
 
 
 class SessionService():
@@ -30,7 +31,8 @@ class SessionService():
         except IntegrityError as ex:
             raise IntegrityError('Secret word is not unique')
         
-        return session.to_schema()
+        logger.info(f'[{session.id}] New session!')
+        return await session.to_schema()
     
 
     @staticmethod
@@ -38,7 +40,7 @@ class SessionService():
         '''Get active user sessions by Telegram ID'''
         session = await Session.get_or_none(user_id=user_id)
         if session is None: raise DoesNotExist('Session not found')
-        return session.to_schema()
+        return await session.to_schema()
     
 
     @staticmethod
@@ -62,12 +64,17 @@ class SessionService():
         await user.save()
         await session.save()
 
+        await NotificationService.send(NotificationSchema(
+            target=user.user_id,
+            message='Профиль обновлен, учетные записи связаны 🔗',
+        ))
+
     
     @staticmethod
     async def active(user_id: int) -> List[SessionSchema]:
         sessions = await Session.filter(active=True, user=user_id)
         if len(sessions) <= 0: raise DoesNotExist('Active sessions not found')
-        return [session.to_schema() for session in sessions]
+        return [await session.to_schema() for session in sessions]
 
 
     @staticmethod

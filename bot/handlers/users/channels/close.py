@@ -14,7 +14,7 @@ from handlers.routers import user_router
 @user_router.callback_query(ChannelsCallback.filter(F.action == 'cancel'))
 async def back_main_menu(callback: CallbackQuery, bot: Bot, state: FSMContext):
     await state.clear()
-    channels = (await UserService.findOneByUserId(callback.from_user.id))['channels']
+    channels = (await UserService.get(callback.from_user.id)).channels
     await render_channels(callback.message, channels)
     await bot.answer_callback_query(callback.id)
 
@@ -22,5 +22,5 @@ async def back_main_menu(callback: CallbackQuery, bot: Bot, state: FSMContext):
 @user_router.callback_query(ChannelsCallback.filter(F.action == 'back'))
 async def open(callback: CallbackQuery, callback_data: ChannelsCallback, bot: Bot, state: FSMContext):
     await state.clear()
-    channels = (await UserService.findOneByUserId(callback.from_user.id))['channels']
+    channels = (await UserService.get(callback.from_user.id)).channels
     await render_channels(callback.message, channels, True)

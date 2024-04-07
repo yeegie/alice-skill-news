@@ -25,7 +25,7 @@ class Session(Model):
     class Meta:
         table = 'sessions'
 
-    def to_schema(self) -> SessionSchema:
+    async def to_schema(self) -> SessionSchema:
         return SessionSchema(
             id=self.id,
             secret=self.secret,

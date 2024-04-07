@@ -4,6 +4,10 @@ from ..fabrics.fabric import MenuCallback, PopupCallback, ChannelsCallback, Sess
 
 from typing import Optional
 
+from models.schemas.channel import ChannelSchema
+from typing import List
+
+
 btn_main_menu = KeyboardButton(text='Главное меню 🏠')
 btn_back_button = KeyboardButton(text='Назад')
 
@@ -87,17 +91,17 @@ def menu():
     return builder.as_markup(resize_keyboard=True)
 
 
-def channels_list(channels: list):
+def channels_list(channels: List[ChannelSchema]):
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(text='Добавить ➕', callback_data=ChannelsCallback(action='new').pack()))
 
     for channel in channels:
         builder.row(
             InlineKeyboardButton(
-                text=f"{channel['title']}   {'🔳' if channel['active'] else '⬜️'}",
+                text=f"{channel.title}   {'🔳' if channel.active else '⬜️'}",
                 callback_data=ChannelsCallback(
                     action='open',
-                    channel_id=channel['id'],
+                    channel_id=channel.id,
                     ).pack()
             ))
         
@@ -127,17 +131,20 @@ def channels():
 
     return builder.as_markup(resize_keyboard=True)
 
-def channel_view(channel_id: int, visibility: bool):
+def channel_view(channel: ChannelSchema):
     builder = InlineKeyboardBuilder()
+
+    channel_url = 'https://t.me/' + channel.channel_id[1:]
 
     STATUS = {
         True: '🔳',
         False: '⬜️',
     }
 
-    builder.row(InlineKeyboardButton(text='Поменять название ✏️', callback_data=ChannelsCallback(action='edit', target='title', channel_id=channel_id).pack()))
-    builder.row(InlineKeyboardButton(text=f'Видимость {STATUS[visibility]}', callback_data=ChannelsCallback(action='toggle', channel_id=channel_id).pack()))
-    builder.row(InlineKeyboardButton(text='Удалить 🗑', callback_data=ChannelsCallback(action='delete', channel_id=channel_id).pack()))
+    builder.row(InlineKeyboardButton(text='Перейти 🔍', url=channel_url))
+    builder.row(InlineKeyboardButton(text='Поменять название ✏️', callback_data=ChannelsCallback(action='edit', target='title', channel_id=channel.id).pack()))
+    builder.row(InlineKeyboardButton(text=f'Видимость {STATUS[channel.active]}', callback_data=ChannelsCallback(action='toggle', channel_id=channel.id).pack()))
+    builder.row(InlineKeyboardButton(text='Удалить 🗑', callback_data=ChannelsCallback(action='delete', channel_id=channel.id).pack()))
     builder.row(InlineKeyboardButton(text='Назад к каналам 🗂', callback_data=ChannelsCallback(action='back').pack()))
 
     return builder.as_markup(resize_keyboard=True)

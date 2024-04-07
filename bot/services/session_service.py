@@ -3,7 +3,7 @@ from datetime import datetime
 import aiohttp
 from loguru import logger
 from datetime import datetime, timedelta
-from .exceptions import NotFoundException, ServerError
+from .exceptions import NotFound, ServerError
 from typing import Union, Tuple
 
 
@@ -43,7 +43,7 @@ class SessionService:
         async with aiohttp.ClientSession() as session:
             response = await session.patch(url=API.base_url + 'sessions/close_all/' + str(user_id))
 
-            if (response.status == 200):
-                return await response.json()
+            if (response.status == 204):
+                pass
             else:
                 logger.error(f'[{response.status}] An error occurred while closing a session.')

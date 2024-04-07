@@ -14,5 +14,5 @@ from services import UserService
 @user_router.message(F.text.lower().startswith('устройства'))
 @user_router.message(Command(commands=['devices']))
 async def open_devices(message: Message, bot: Bot):
-    devices = (await UserService.findOneByUserId(message.from_user.id))['devices']
+    devices = (await UserService.get(message.from_user.id))['devices']
     await render_devices(message, devices)

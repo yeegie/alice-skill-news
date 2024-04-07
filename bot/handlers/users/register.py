@@ -20,15 +20,17 @@ from services.user_service import UserService
 
 from captcha.image import ImageCaptcha
 
+from services.exceptions import NotFound
+
 
 @user_router.message(F.text == 'Регистрация 👤')
 @user_router.message(F.text.lower().startswith('регистрация'))
 @user_router.message(F.text == 'Другую капчу 🤬')
 async def register_start(message: Message, bot: Bot, state: FSMContext):
-    is_exist, user = await UserService.check(message.from_user.id)
+    user = await UserService.exist(message.from_user.id)
 
     # Проверяем имеет ли пользователь аккаунт
-    if is_exist:
+    if user is not None:
         await message.answer('У вас уже есть профиль 🙄', reply_markup=markups.menu())
         return
 
@@ -97,7 +99,7 @@ async def get_code(message: Message, state: FSMContext):
 
     if data['secret'] == user_code:
         await message.answer('Отлично, теперь добавь каналы которые ты хочешь отслеживать ⭐', reply_markup=markups.menu())
-        response = await UserService.create_user(
+        response = await UserService.create(
             user_id=message.from_user.id,
             email=data['email'],
             username=message.from_user.username,

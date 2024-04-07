@@ -29,7 +29,7 @@ async def delete_profile(callback: CallbackQuery, bot: Bot, state: FSMContext):
 @user_router.message(ConfirmDeleteProfile.confirm)
 async def get_confirm(message: Message, bot: Bot, state: FSMContext):
     if message.text.lower() == 'да':
-        user = await UserService.findOneByUserId(user_id=message.from_user.id)
+        user = await UserService.get(user_id=message.from_user.id)
         try:
             await UserService.delete(user['id'])
             await message.answer('Твой профиль удалён 👋')
@@ -40,7 +40,7 @@ async def get_confirm(message: Message, bot: Bot, state: FSMContext):
             logger.error(f'{ex}\nResponse: {ex.extra_info}')
 
     elif message.text.lower() == 'нет':
-        user = await UserService.findOneByUserId(user_id=message.from_user.id)
+        user = await UserService.get(user_id=message.from_user.id)
         await render_profile(message, markups.profile_menu(), user)
         await state.clear()
     else:

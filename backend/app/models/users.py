@@ -29,6 +29,7 @@ class User(Model):
         return self.type == UserType.admin
     
     async def to_schema(self) -> UserSchema:
+        '''Make tortoise model to -> UserSchema'''
         return UserSchema(
             id=self.id,
             type=self.type,
@@ -38,7 +39,7 @@ class User(Model):
             username=self.username,
             email=self.email,
             register_time=self.register_time,
-            sessions=[session.to_schema() for session in await self.sessions.all()],
-            channels=self.channels,
+            sessions=[await session.to_schema() for session in await self.sessions.all()],
+            channels=[await channel.to_schema() for channel in await self.channels.all()],
             news=self.news,
         )

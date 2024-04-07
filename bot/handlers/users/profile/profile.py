@@ -21,11 +21,11 @@ from helpers.functions import render_profile
 @user_router.message(F.text.lower().startswith('профиль'))
 @user_router.message(Command(commands=['profile']))
 async def show_profile(message: Message):
-    is_exist, user = await UserService.check(user_id=message.from_user.id)
+    user = await UserService.get(user_id=message.from_user.id)
 
-    if is_exist is True:
+    if user is not None:
         await render_profile(message, markups.profile_menu(), user)
-    elif is_exist is False:
+    else:
         await message.answer('У вас нет профиля!', reply_markup=markups.welcome())
 
 

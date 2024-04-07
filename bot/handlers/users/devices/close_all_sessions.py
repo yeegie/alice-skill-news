@@ -12,7 +12,7 @@ from handlers.routers import user_router
 @user_router.callback_query(DeviceCallback.filter(F.action == 'close_all_sessions'))
 async def close_all_sessions(callback: CallbackQuery, bot: Bot):
     await SessionService.close_all_sessions(callback.from_user.id)
-    devices = (await UserService.findOneByUserId(callback.from_user.id))['devices']
+    devices = (await UserService.get(callback.from_user.id))['devices']
 
     await callback.message.answer('Закрыл все сессии 👌')
     await render_devices(callback.message, devices)

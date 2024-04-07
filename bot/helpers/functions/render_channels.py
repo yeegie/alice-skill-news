@@ -1,12 +1,14 @@
 from aiogram import Bot, F
 from aiogram.types import Message
 
-from typing import Optional
+from typing import Optional, List
 
 from helpers.keyboards import markups
 
+from models.schemas.channel import ChannelSchema
 
-async def render_channels(message: Message, channels: list, smooth: Optional[bool] = False):
+
+async def render_channels(message: Message, channels: List[ChannelSchema], smooth: Optional[bool] = False):
     if smooth:
         if channels:
             await message.edit_text(f'<b>Ваши каналы</b> 🗂', reply_markup=markups.channels_list(channels))

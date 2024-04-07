@@ -22,6 +22,11 @@ async def new_channel(callback: CallbackQuery, bot: Bot, state: FSMContext):
 
 @user_router.message(states.NewChannel.channel_id)
 async def get_channel(message: Message, bot: Bot, state: FSMContext):
+    if not (message.text[0].startswith("@") or message.text.startswith('https://')):
+        await message.answer('Введи корректные данные 👇\n\n<code>https://t.me/channel_name</code>\n<code>@channel_name</code>')
+        await state.set_state(states.NewChannel.channel_id)
+        return
+
     channel_name = message.text.replace('https://t.me/', '').lower()
     if channel_name[0] != '@': channel_name = '@' + channel_name
     await state.update_data(channel_id=channel_name)
@@ -44,7 +49,7 @@ async def confirm(message: Message, bot: Bot, state: FSMContext):
     if message.text.lower() == 'да':
         data = await state.get_data()
 
-        await ChannelService.create_channel(
+        await ChannelService.create(
             title=data['title'],
             channel_id=data['channel_id'],
             user_id=message.from_user.id,

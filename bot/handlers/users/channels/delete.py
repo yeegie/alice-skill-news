@@ -20,8 +20,8 @@ class ConfirmDeleteChannel(StatesGroup):
 
 @user_router.callback_query(ChannelsCallback.filter(F.action == 'delete'))
 async def delete_channel(callback: CallbackQuery, callback_data: ChannelsCallback, bot: Bot, state: FSMContext):
-    channel = await ChannelService.findOneById(callback_data.channel_id)
-    await callback.message.answer(f'Удалить канал {channel["title"]}?', reply_markup=markups.confirm())
+    channel = await ChannelService.get(callback_data.channel_id)
+    await callback.message.answer(f'Удалить канал {channel.title}?', reply_markup=markups.confirm())
     await state.set_state(ConfirmDeleteChannel.confirm)
     await state.update_data(channel_id=callback_data.channel_id)
     await bot.answer_callback_query(callback.id)
@@ -33,7 +33,7 @@ async def get_confirm(message: Message, bot: Bot, state: FSMContext):
 
     if message.text.lower() == 'да':
         await ChannelService.delete(channel_id)
-        channels = (await UserService.findOneByUserId(user_id=message.from_user.id))['channels']
+        channels = (await UserService.get(user_id=message.from_user.id)).channels
 
         await message.answer('Удалил')
         await state.clear()

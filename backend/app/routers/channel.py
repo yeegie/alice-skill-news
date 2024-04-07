@@ -8,72 +8,55 @@ from models import Channel, User
 
 from typing import List
 
+from services.channel import ChannelService
+
+from tortoise.exceptions import DoesNotExist
+
 
 router = APIRouter()
 
 
-@router.post('/', status_code=201, response_model=ChannelSchema)
+@router.post('/', status_code=201)
 async def create(channel_data: ChannelCreateDto):
-    try:
-        user = await User.get_or_none(user_id=channel_data.user_id)
-        if user is None: raise HTTPException(status_code=404, detail='User not found')
-        new_channel = await Channel.create(
-            title=channel_data.title,
-            channel_id=channel_data.channel_id,
-            user=user
-        )
-        return new_channel
-    except IntegrityError as integrity_ex:
-        raise HTTPException(status_code=409, detail='Record already exists')
-    except HTTPException as http_ex:
-        raise HTTPException(status_code=http_ex.status_code, detail=http_ex.detail)
-    except Exception as ex:
-        return HTTPException(status_code=500, detail=str(ex))
+    '''Create channel from dto'''
+    await ChannelService.create(channel_data)
 
 
 @router.get('/', response_model=List[ChannelSchema])
 async def all():
     try:
-        return await Channel.all()
+        raise await ChannelService.all()
     except Exception as ex:
-        return HTTPException(status_code=500, detail=str(ex))
+        raise HTTPException(500, str(ex))
     
 
-@router.get('/by/id/{id}', response_model=ChannelSchema)
-async def find_one_by_id(id: str):
+@router.get('/{id}', response_model=ChannelSchema)
+async def get(id: str):
     try:
-        channel = await Channel.get_or_none(id=id)
-        if channel is None: raise HTTPException(status_code=404, detail='Channel not found.')
-        return channel
-    except HTTPException as http_ex:
-        return Response(content=http_ex.detail, status_code=http_ex.status_code)
+        return await ChannelService.get(id)
+    except DoesNotExist as ex:
+        raise HTTPException(404, str(ex))
     except Exception as ex:
-        raise HTTPException(status_code=500, detail=str(ex))
+        raise HTTPException(500, str(ex))
 
 
-@router.post('/toggle/{id}', response_model=ChannelSchema)
+@router.post('/toggle/{id}', status_code=204)
 async def toggle_visibility(id: str):
+    '''Toggle visibility (active) in channel by uuid'''
     try:
-        channel = await Channel.get_or_none(id=id)
-        if channel is None: raise HTTPException(status_code=404, detail='Channel not found.')
-        channel.active = not channel.active
-        await channel.save()
-        return channel
-    except HTTPException as http_ex:
-        return Response(content=http_ex.detail, status_code=http_ex.status_code)
+        await ChannelService.toggle(id)
+    except DoesNotExist as ex:
+        raise HTTPException(404, str(ex))
     except Exception as ex:
-        raise HTTPException(status_code=500, detail=str(ex))
+        raise HTTPException(500, str(ex))
     
 
 @router.delete('/{id}', status_code=204)
 async def delete(id: str):
+    '''Delete channel by uuid'''
     try:
-        channel = await Channel.get_or_none(id=id)
-        if channel is None:
-            raise HTTPException(status_code=404, detail='Сhannel not found.')
-        await channel.delete()
-    except HTTPException as http_ex:
-        return Response(content=http_ex.detail, status_code=http_ex.status_code)
+        await ChannelService.delete(id)
+    except DoesNotExist as ex:
+        raise HTTPException(404, str(ex))
     except Exception as ex:
-        raise HTTPException(
-            status_code=500, detail=str(ex))
+        raise HTTPException(500, str(ex))

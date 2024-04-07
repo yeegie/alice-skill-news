@@ -31,3 +31,8 @@ class TelegramAPI:
     section = 'TelegramAPI'
     api_id = parser.get(section, 'api_id')
     api_hash = parser.get(section, 'api_hash')
+
+
+class Bot:
+    section = 'Bot'
+    url = parser.get(section, 'url')

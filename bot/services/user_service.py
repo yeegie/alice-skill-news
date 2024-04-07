@@ -3,15 +3,21 @@ from data.config import API
 from loguru import logger
 
 from typing import Optional
+from models.schemas.user import UserSchema
 
-from .exceptions import DeleteException
+from .exceptions import DeleteException, NotFound
 
 
 class UserService:
     @staticmethod
-    async def create_user(user_id: int, email: str, username: str, full_name: str):
+    async def create(user_id: int, email: str, username: str, full_name: str):
         """
-        ababab
+        Create user from data\n
+        params:
+        * user_id -- telegram unique id
+        * email -- just email
+        * username -- telegram username start with "@", can be None
+        * full_name -- full_name from user.full_name
         """
         header = {
             "Content-Type": "application/json"
@@ -30,17 +36,47 @@ class UserService:
             else:
                 logger.error(f'[{response.status}] {response.json()}')
 
+
     @staticmethod
-    async def findOneByUserId(user_id: int):
+    async def get(user_id: int) -> UserSchema:
         async with aiohttp.ClientSession() as session:
-            response = await session.get(url=API.base_url + f'users/by/user_id/{user_id}')
+            response = await session.get(url=API.base_url + f'users/by-user_id/{user_id}')
+            response_raw = await response.json()
 
             if response.status == 200:
-                return await response.json()
+                return UserSchema(
+                    id = response_raw['id'],
+                    type = response_raw['type'],
+                    user_id = response_raw['user_id'],
+                    yandex_id = response_raw['yandex_id'],
+                    full_name = response_raw['full_name'],
+                    username = response_raw['username'],
+                    email = response_raw['email'],
+                    register_time = response_raw['register_time'],
+                    sessions = response_raw['sessions'],
+                    channels = response_raw['channels'],
+                    news = response_raw['news'],
+
+                )
             elif response.status == 404:
-                return 404
+                return None
+            elif response.status == 500:
+                logger.error(f'[500] USER NOT FOUND\n{await response.json()}')
+                return None
             else:
-                logger.error(f'[{response.status}] {response.json()}')
+                logger.error(f'[{response.status}] Unknown error\n{await response.json()}')
+                return None
+            
+
+    @classmethod
+    async def exist(cls, user_id: int):
+        user = await cls.get(user_id)
+
+        if user is None:
+            return False
+        
+        return True
+
 
     @staticmethod
     async def delete(id: str):
@@ -50,18 +86,6 @@ class UserService:
             if response.status != 204:
                 raise DeleteException(f'[{response.status}] Ошибка при удалении пользователя', await response.json())
             
-
-    @staticmethod
-    async def check(user_id: str):
-        '''
-        : return status_code, user_data if exist
-        '''
-        async with aiohttp.ClientSession() as session:
-            response = await session.get(url=API.base_url + f'users/by/user_id/{user_id}')
-            if response.status == 404:
-                return False, None
-            elif response.status == 200:
-                return True, await response.json()
     
     class UserDto:
         type = Optional[str]

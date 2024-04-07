@@ -33,7 +33,7 @@ async def get_name(message: Message, bot: Bot, state: FSMContext):
 async def get_confirm(message: Message, state: FSMContext, bot: Bot):
     new_name = (await state.get_data())['new_name']
     if message.text.lower() == 'да':
-        is_exist, user = await UserService.check(user_id=message.from_user.id)
+        is_exist, user = await UserService.exist(user_id=message.from_user.id)
         # user = await UserService.getByUserId(message.from_user.id)
         # await UserService.update(user['id'], {'name': 'new_name'})
         # await render_profile(message, markups.menu(), user)

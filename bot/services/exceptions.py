@@ -6,7 +6,7 @@ class DeleteException(Exception):
         super().__init__(message)
         self.extra_info = extra_info
 
-class NotFoundException(Exception):
+class NotFound(Exception):
     def __init__(self, message: str):
         super().__init__(message)
 

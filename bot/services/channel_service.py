@@ -4,10 +4,12 @@ from loguru import logger
 
 from .exceptions import DeleteException
 
+from models.schemas.channel import ChannelSchema
+
 
 class ChannelService:
     @staticmethod
-    async def create_channel(title: str, channel_id: str, user_id: int):
+    async def create(title: str, channel_id: str, user_id: int):
         header = {
             "Content-Type": "application/json"
         }
@@ -25,12 +27,19 @@ class ChannelService:
                 logger.error(f'[{response.status}] {await response.json()}')
     
     @staticmethod
-    async def findOneById(id: str):
+    async def get(id: str) -> ChannelSchema:
         async with aiohttp.ClientSession() as session:
-            response = await session.get(url=API.base_url + 'channels/by/id/' + id)
+            response = await session.get(url=API.base_url + 'channels/' + id)
+            response_raw = await response.json()
 
             if response.status == 200:
-                return await response.json()
+                return ChannelSchema(
+                    id=response_raw['id'],
+                    title=response_raw['title'],
+                    channel_id=response_raw['channel_id'],
+                    user_id=response_raw['user_id'],
+                    active=response_raw['active'],
+                )
             else:
                 logger.error(f'[{response.status}] {await response.json()}')
 
@@ -45,9 +54,9 @@ class ChannelService:
                 logger.error(f'[{response.status}] {await response.json()}')
 
     @staticmethod
-    async def delete(id: int):
+    async def delete(id: str):
         async with aiohttp.ClientSession() as session:
-            response = await session.delete(url=API.base_url + 'channels/' + str(id))
+            response = await session.delete(url=API.base_url + 'channels/' + id)
 
             if response.status != 204:
                 raise DeleteException(f'[{response.status}] Ошибка при удалении канала', extra_info=await response.json())
